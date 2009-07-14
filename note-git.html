@@ -1,0 +1,128 @@
+<HTML>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<Title>Izero's GIT Note</Title>
+<pre>
+<h3>====設定環境====</h3>
+git config --global push.default matching
+git config --global alias.co checkout
+git config --global alias.ci commit
+git config --global alias.st status
+git config --global alias.di diff
+git config --global alias.lo log
+git config --global alias.br branch
+git config --global color.diff auto
+git config --global color.status auto
+git config --global color.branch auto
+git config --global color.ui auto
+
+git config --global user.name "Izero"
+git config --global user.email "izerolee@ooxx.xxoo.blah"
+
+git config --global github.user "Izero"
+git config --global github.token "blahblahblahblah"
+<p/>
+
+<h3>====初始化Repository====</h3>
+[local自己弄一個repository]
+git init
+
+[從github clone一個respository]
+git clone git@github.com:Izero/your_repository.git
+
+如此一來會自動設定好origin以及origin/master跟master的對應關係
+==> (等同於以下指令)
+git remote add origin git@github.com:Izero/your_repository.git
+git config branch.master.remote origin
+git config branch.master.merge refs/heads/master
+
+也就是.git/config 會加入以下內容
+[remote "origin"]
+        url = git@github.com:Izero/your_repository.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+
+[branch "master"]
+        remote = origin
+        merge = refs/heads/master
+<p/>
+
+
+
+
+<h3>====日常操作====</h3>
+git status 列出目前的狀態
+  Changed but not updated 有修改但是沒有加入 staging area 的檔案
+  Changes to be committed (staging area) 已經加入 staging area 的檔案
+  Untracked 還沒有被追蹤的新檔案
+
+git add . 加入所有檔案，包括所有還沒有被追蹤(untracked)的檔案
+git add -i 進入互動模式，你甚至可以只 Add 檔案裡面其中的一段程式碼到 staging area 去(稱作patch)
+git add -u 只加更新的檔案，不加入還沒有追蹤的檔案 (跟 git commit -a 涵蓋的範圍相同)
+
+使用 git add 會將檔案提交到 staging area 中
+
+commit
+commit -a 等同於 add -u + commit
+
+git rm foobar 刪除
+git mv old_file new_file 改檔名
+
+一樣有 .gitignore
+空目錄是不會 commit 出去的
+
+git push 把所有跟remote有對應的branch push到remote
+git push branch_name 只push特定branch
+<p/>
+
+
+<h3>====diff====</h3>
+git diff 是比較 working tree 跟 staging area
+git diff --cached 是比較 staging area 跟本來的 repo.
+git diff HEAD 是比較 working tree 跟本來的 repo.
+<p/>
+
+
+<h3>====reset====</h3>
+git reset filename 會從 staging area 狀態回到 unstaging 或 untracked (檔案內容並不會改變)
+git checkout filename 會從 unstaging 狀態回到最初 repo. 的檔案(檔案內容變回修改前)
+git reset --hard 全部回到原本的樣子
+<p/>
+
+
+<h3>====branch====</h3>
+列出branch:
+git branch 列出目前有那些 branch 以及目前在那個 branch
+git branch -r 列出remote的所有branch
+git branch -a 列出local和remote的所有branch
+
+新增/改名/刪除:
+git branch new_branch_name 建立本地 local branch
+git branch -m old_name new_name 改名字 (如果有同名會失敗，改用 -M 可以強制覆蓋)
+git branch -d branch_name 刪除 local branch
+
+切換branch:
+git checkout branch_name 切換 branch (注意到如果你有檔案修改了卻還沒 commit，可能會不能切換 branch)
+git checkout -b new_branch_name 本地建立 branch 並立即 checkout 切換過去
+
+取回遠端的某個branch與local:
+git checkout -b local_barnch_name origin/remote_branch_name
+
+將local某個branch送上去remote:
+git push origin local_branch_name
+<p/>
+
+
+<h3>====merge====</h3>
+merge有四種方式:
+Straight merge 預設的合併模式，會有全部的被合併的 branch commits 記錄加上一個 merge-commit，看線圖會有兩條 Parents 線，並保留所有 commit log。
+Squashed commit 壓縮成只有一個 merge-commit，不會有被合併的 log。SVN 的 merge 即是如此。
+cherry-pick 只合併指定的 commit
+rebase 變更 branch 的分支點：找到要合併的兩個 branch 的共同的祖先，然後先只用要被 merge 的 branch 來 commit 一遍，然後再用目前 branch 再 commit 上去。這方式僅適合還沒分享給別人的 local branch，因為等於砍掉重練 commit log。
+
+git merge branch_name 合併另一個 branch，若沒有 conflict 衝突會直接 commit。若需要解決衝突則會再多一個 commit。
+git merge --squash branch_name 將另一個 branch 的 commit 合併為一筆，特別適合需要做實驗的 fixes bug 或 new feature，最後只留結果。合併完不會幫你先 commit。通常會在commit之後, 會把原本的branch刪除
+git cherry-pick 321d76f 只合併特定其中一個 commit。如果要合併多個，可以加上 -n 指令就不會先幫你 commit，這樣可以多 pick幾個要合併的 commit，最後再 git commit 即可。
+git rebase branch_name 變更 branch 的分支點
+<p/>
+
+</pre>
+</HTML>
